@@ -120,7 +120,7 @@ Sistem PTW berbasis web yang:
          ↓
 ┌─────────────────┐
 │    Database     │
-│   (SQL Server)  │
+│   (MySQL MAMP)  │
 └─────────────────┘
 ```
 
@@ -321,7 +321,7 @@ checklist_items → safety_checklists
 ### Backend
 - **Framework:** ASP.NET Core MVC
 - **Language:** C#
-- **Database:** SQL Server
+- **Database:** MySQL via MAMP
 - **ORM:** Entity Framework Core
 - **Authentication:** ASP.NET Identity
 
@@ -343,7 +343,7 @@ checklist_items → safety_checklists
 ### Prerequisites
 
 - .NET 6.0 atau lebih tinggi
-- SQL Server 2019 atau lebih tinggi
+- MySQL via MAMP
 - Visual Studio 2022 / VS Code
 - Node.js (untuk Tailwind CSS)
 
