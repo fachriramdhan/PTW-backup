@@ -478,7 +478,7 @@ Proyek ini dilisensikan di bawah [MIT License](LICENSE).
 
 ## 📞 Kontak & Support
 
-- **Project Lead:** [Nama]
+- **Name:** fachriramdhan
 - **Email:** support@company.com
 - **Issue Tracker:** [GitHub Issues](https://github.com/your-org/ptw-system/issues)
 
@@ -513,4 +513,4 @@ Sistem ini dirancang untuk membantu pengelolaan permit to work. Namun, keputusan
 
 ---
 
-**© 2024 PT Mattel Indonesia. All Rights Reserved.**
+**© 2026 fachriramdhan. All Rights Reserved.**
