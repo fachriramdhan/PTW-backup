@@ -1,807 +1,1047 @@
- Baik, saya akan membuat **UI/UX Plan dan Navigation Structure** yang komprehensif untuk sistem PTW ini. Plan ini akan mencakup:
+# PTW - Sistem Permit to Work
 
-1. **Information Architecture** - Struktur navigasi lengkap
-2. **User Flow** - Perjalanan pengguna per role
-3. **Wireframe Layout** - Struktur halaman utama
-4. **Design System** - Komponen UI dan styling guidelines
-5. **Interaction Patterns** - Cara pengguna berinteraksi dengan sistem
-6. **Responsive Strategy** - Adaptasi untuk mobile/tablet di lapangan
+> **Sistem Permit to Work (PTW) Berbasis Web untuk Industri Manufaktur**
+
+Sistem kontrol izin kerja berisiko yang aman, terkendali, dan terdokumentasi dengan baik untuk lingkungan industri manufaktur.
 
 ---
 
-# 🎨 UI/UX PLAN & NAVIGATION SYSTEM
-## PTW (Permit to Work) System
+## 🎯 Tentang Proyek
+
+Sistem PTW adalah solusi digital untuk mengelola izin kerja berisiko tinggi di lingkungan manufaktur. Sistem ini menggantikan proses manual berbasis kertas dengan platform web yang terpusat, mudah diaudit, dan dapat digunakan langsung di lapangan.
+
+### Tujuan Sistem
+
+- ✅ Mencegah pekerjaan berisiko tanpa izin
+- ✅ Memastikan pelaksanaan JSEA sebelum pekerjaan
+- ✅ Menjamin proses approval berjenjang
+- ✅ Mengontrol dan memonitor pekerjaan aktif
+- ✅ Menyediakan bukti audit K3 yang valid
 
 ---
 
-## 1. NAVIGATION ARCHITECTURE
+## 🔍 Latar Belakang
 
-### 1.1 Global Navigation Structure
+### Masalah yang Diselesaikan
+
+Di industri manufaktur, pengelolaan Permit to Work secara manual menimbulkan berbagai permasalahan:
+
+- ❌ **Tidak real-time** - Informasi terlambat sampai ke pihak terkait
+- ❌ **Sulit ditelusuri** - Jejak audit tidak jelas
+- ❌ **Rentan pelanggaran K3** - Kontrol lemah terhadap prosedur keselamatan
+- ❌ **Dokumentasi tidak terpusat** - Data tersebar di kertas dan Excel
+
+### Solusi
+
+Sistem PTW berbasis web yang:
+
+- ✅ Terpusat dan accessible dari mana saja
+- ✅ Terdokumentasi dengan baik
+- ✅ Mudah diaudit dengan trail lengkap
+- ✅ User-friendly untuk penggunaan di lapangan
+
+---
+
+## ⚡ Fitur Utama
+
+### 1. **Permit Management**
+- Pengajuan permit kerja digital
+- Template berbeda untuk setiap jenis pekerjaan
+- Auto-generate nomor permit
+- Status tracking real-time
+
+### 2. **JSEA (Job Safety & Environmental Analysis)**
+- Form analisis bahaya terstruktur
+- Identifikasi risiko per langkah kerja
+- Pengendalian risiko yang jelas
+- Validasi kelengkapan sebelum submit
+
+### 3. **Approval Workflow**
+- Alur persetujuan berjenjang otomatis
+- Supervisor → Area Owner → HSE → Authorizer
+- Email/notifikasi otomatis
+- Reject, approve, atau request revision
+
+### 4. **Safety Checklist**
+- Checklist K3 dinamis sesuai jenis pekerjaan
+- Validasi APD dan peralatan
+- Verifikasi kondisi area kerja
+
+### 5. **Active Permit Monitoring**
+- Dashboard permit aktif real-time
+- QR Code untuk verifikasi di lapangan
+- Stop Work Authority
+- Suspend/Resume permit
+
+### 6. **Reporting & Audit Trail**
+- Histori lengkap setiap permit
+- Export ke PDF dan Excel
+- Log aktivitas sistem
+- Retensi data minimal 5 tahun
+
+---
+
+## 🏗️ Arsitektur Sistem
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    GLOBAL NAVIGATION                        │
-├─────────────────────────────────────────────────────────────┤
-│  [Logo]    Dashboard    Permits    Approvals    Monitoring  │
-│                                                      [User]   │
-└─────────────────────────────────────────────────────────────┘
-
-SIDEBAR NAVIGATION (Role-Based)
-
 ┌─────────────────┐
-│  📊 DASHBOARD   │  ← Default landing page
-├─────────────────┤
-│  📝 PERMITS     │
-│   ├─ New Permit │
-│   ├─ My Permits │
-│   ├─ Drafts     │
-│   └─ All Permits│  (Admin/HSE only)
-├─────────────────┤
-│  ✅ APPROVALS   │
-│   ├─ Pending    │
-│   ├─ Approved   │
-│   └─ Rejected   │
-├─────────────────┤
-│  👁️ MONITORING  │
-│   ├─ Active Now │
-│   ├─ QR Verify  │
-│   └─ Stop Work  │
-├─────────────────┤
-│  📈 REPORTS     │  (HSE/Admin/Authorizer)
-│   ├─ Analytics  │
-│   ├─ Audit Log  │
-│   └─ Export     │
-├─────────────────┤
-│  ⚙️ MASTER DATA │  (Admin only)
-│   ├─ Users      │
-│   ├─ Locations  │
-│   ├─ Checklists │
-│   └─ Permit Types│
+│  User Browser   │
+└────────┬────────┘
+         │
+         ↓
+┌─────────────────┐
+│  Web PTW System │
+│   (ASP.NET MVC) │
+└────────┬────────┘
+         │
+         ↓
+┌─────────────────┐
+│ Approval Engine │
+│  (Workflow)     │
+└────────┬────────┘
+         │
+         ↓
+┌─────────────────┐
+│    Database     │
+│   (MySQL MAMP)  │
 └─────────────────┘
 ```
 
-### 1.2 Role-Based Navigation Access
+### Modul Sistem
 
-| Menu | Requester | Supervisor | Area Owner | HSE | Authorizer | Admin |
-|------|:---------:|:----------:|:----------:|:---:|:----------:|:-----:|
-| **Dashboard** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **New Permit** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **My Permits** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Approvals → Pending** | ❌ | ✅ | ✅ | ✅ | ✅ | ❌ |
-| **Approvals → History** | ❌ | ✅ | ✅ | ✅ | ✅ | ❌ |
-| **Monitoring → Active** | RO | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Monitoring → QR Verify** | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Reports** | ❌ | RO | RO | ✅ | ✅ | ✅ |
-| **Master Data** | ❌ | ❌ | ❌ | RO | RO | ✅ |
-
-> **Legend:** ✅ Full Access | RO Read Only | ❌ No Access
+1. **User & Role Management** - RBAC dan akses kontrol
+2. **Permit Management** - Core permit functionality
+3. **JSEA Management** - Risk analysis
+4. **Checklist K3** - Safety verification
+5. **Approval Workflow** - Multi-level authorization
+6. **Monitoring** - Active permit tracking
+7. **Closing Permit** - Work completion
+8. **Reporting & Audit** - Analytics dan compliance
 
 ---
 
-## 2. USER FLOW DIAGRAMS
+## 🔨 Jenis Pekerjaan
 
-### 2.1 Requester Flow (Create Permit)
+Sistem mendukung berbagai jenis pekerjaan berisiko dengan checklist K3 spesifik:
 
-```
-┌──────────┐     ┌──────────┐     ┌──────────┐     ┌──────────┐
-│  START   │────▶│ Dashboard│────▶│New Permit│────▶│Select    │
-│          │     │          │     │  Entry   │     │Permit    │
-└──────────┘     └──────────┘     └──────────┘     │Type      │
-                                                    └────┬─────┘
-                                                         │
-┌──────────┐     ┌──────────┐     ┌──────────┐     ┌───┴──────┐
-│  SUBMIT  │◀────│  REVIEW  │◀────│Fill Basic│◀────│  JSEA    │
-│  Permit  │     │  & Send  │     │  Info    │     │  Form    │
-└────┬─────┘     └──────────┘     └──────────┘     └──────────┘
-     │
-     ▼
-┌──────────┐
-│ STATUS:  │
-│SUBMITTED │
-└──────────┘
-     │
-     ▼
-┌──────────┐     ┌──────────┐     ┌──────────┐
-│ Track in │────▶│Approved? │────▶│ ACTIVE   │
-│ MyPermits│     │          │     │(Get QR)  │
-└──────────┘     └────┬─────┘     └──────────┘
-                      │
-                      ▼
-               ┌──────────┐
-               │ REJECTED │
-               │(Revise &  │
-               │ Resubmit) │
-               └──────────┘
-```
+| Jenis | Deskripsi | Risk Level |
+|-------|-----------|------------|
+| **Hot Work** | Pengelasan, cutting, grinding | 🔴 High |
+| **Electrical Work** | Pekerjaan instalasi listrik | 🔴 High |
+| **Working at Height** | Pekerjaan di ketinggian >1.8m | 🔴 High |
+| **Confined Space** | Kerja di ruang terbatas | 🔴 High |
+| **Maintenance Mesin** | Service mesin produksi | 🟡 Medium |
+| **Chemical Handling** | Penanganan bahan kimia | 🔴 High |
 
-### 2.2 Approval Flow (Multi-Stage)
+---
+
+## 🔄 Alur Kerja
+
+### High-Level Flow
 
 ```
-┌──────────┐     ┌──────────┐     ┌──────────┐     ┌──────────┐
-│ SUBMITTED│────▶│Supervisor│────▶│Area Owner│────▶│   HSE    │
-│          │     │  Review  │     │  Review  │     │  Review  │
-└──────────┘     └────┬─────┘     └────┬─────┘     └────┬─────┘
-                      │                  │                │
-               ┌──────┴──────┐      ┌────┴────┐      ┌────┴────┐
-               │  APPROVE    │      │ APPROVE │      │ APPROVE │
-               │  → Forward  │      │→Forward │      │→Forward │
-               └─────────────┘      └─────────┘      └─────────┘
-                      │                  │                │
-                      ▼                  ▼                ▼
-               ┌─────────────────────────────────────────────────┐
-               │              AUTHORIZER (Final)                 │
-               │  ┌────────┐    ┌────────┐    ┌────────┐       │
-               │  │APPROVE │ or │ REJECT │ or │SUSPEND │       │
-               │  │→ACTIVE │    │→Back   │    │→STOP   │       │
-               │  └────────┘    └────────┘    └────────┘       │
-               └─────────────────────────────────────────────────┘
+START
+  ↓
+Permit Request
+  ↓
+JSEA Completed? ──NO──→ Return to Requester
+  ↓ YES
+Approval Process
+  ├─ Supervisor
+  ├─ Area Owner
+  ├─ HSE
+  └─ Authorizer
+  ↓
+Permit Active
+  ↓
+Work Execution & Monitoring
+  ↓
+Permit Close
+  ↓
+END
 ```
 
-### 2.3 Field Execution Flow
+### Detail Fase
+
+#### **Fase 1: Initiation**
+- Requester login dan membuat permit baru
+- Mengisi detail pekerjaan (lokasi, waktu, deskripsi)
+- Menyimpan sebagai Draft
+
+#### **Fase 2: Risk Analysis**
+- Membuat/melengkapi JSEA
+- Identifikasi bahaya per langkah kerja
+- Menentukan pengendalian risiko
+- Submit permit (hanya jika JSEA lengkap)
+
+#### **Fase 3: Authorization**
+1. **Supervisor Review** - Validasi metode kerja dan kesiapan tim
+2. **Area Owner Review** - Konfirmasi keamanan area produksi
+3. **HSE Review** - Validasi aspek K3 dan JSEA
+4. **Final Authorization** - Keputusan akhir oleh Authorizer
+
+#### **Fase 4: Execution**
+- Permit berstatus ACTIVE
+- QR Code ditempel di lokasi kerja
+- Monitoring oleh Supervisor
+- Stop Work Authority dapat digunakan kapan saja
+
+#### **Fase 5: Closure**
+- Konfirmasi pekerjaan selesai
+- Verifikasi area aman
+- Release LOTO dan peralatan
+- Permit status menjadi CLOSED
+
+---
+
+## 👥 Role & Tanggung Jawab
+
+| Role | Tanggung Jawab | Akses |
+|------|----------------|-------|
+| **Requester** | Mengajukan permit kerja | Create permit, view own permits |
+| **Supervisor** | Mengawasi dan approve pekerjaan | Approve permits, monitor execution |
+| **Area Owner** | Menjamin keamanan area produksi | Approve permits, coordinate with production |
+| **HSE** | Validasi aspek K3 dan JSEA | Approve permits, audit compliance, stop work |
+| **Authorizer** | Otoritas akhir pemberian izin | Final approval, full visibility |
+| **Executor** | Melaksanakan pekerjaan | View assigned permits (read-only) |
+| **Admin** | Mengelola sistem dan master data | Full system access |
+
+---
+
+## 📊 Status Permit
+
+Status permit mengikuti alur yang ketat dan berurutan:
 
 ```
-┌──────────┐     ┌──────────┐     ┌──────────┐
-│  ACTIVE  │────▶│  Print/  │────▶│Display at│
-│  Permit  │     │  Show QR │     │  Site    │
-└────┬─────┘     └──────────┘     └──────────┘
-     │
-     ▼
+DRAFT
+  ↓
+SUBMITTED
+  ↓
+SUPERVISOR_APPROVED
+  ↓
+AREA_OWNER_APPROVED
+  ↓
+HSE_APPROVED
+  ↓
+ACTIVE
+  ↓
+CLOSED
+```
+
+**Status Exception:**
+- `REJECTED` - Ditolak oleh approver
+- `SUSPENDED` - Dihentikan sementara karena kondisi tidak aman
+- `CANCELLED` - Dibatalkan karena keadaan darurat
+
+---
+
+## 🗄️ Struktur Database
+
+### Entitas Utama
+
+#### **Users & Authentication**
+```sql
+users (id, employee_id, name, email, password_hash, is_active)
+roles (id, name)
+user_roles (user_id, role_id)
+```
+
+#### **Permit Core**
+```sql
+permits (id, permit_no, permit_type_id, title, description, 
+         location_id, start_time, end_time, requester_id, status)
+permit_types (id, code, name, risk_level)
+locations (id, parent_id, name, type)
+```
+
+#### **JSEA**
+```sql
+jsea (id, permit_id, prepared_by, reviewed_by)
+jsea_steps (id, jsea_id, step_no, job_step, hazard, 
+            risk_level, control)
+```
+
+#### **Safety Checklist**
+```sql
+safety_checklists (id, permit_type_id, name)
+checklist_items (id, checklist_id, description)
+permit_checklist_results (permit_id, checklist_item_id, 
+                          is_checked, remarks)
+```
+
+#### **Approval & Monitoring**
+```sql
+permit_approvals (id, permit_id, role, approver_id, 
+                  status, remarks, approved_at)
+permit_monitoring (id, permit_id, action, reason, 
+                   action_by, action_time)
+permit_closing (id, permit_id, closed_by, closing_notes, closed_at)
+```
+
+#### **Audit**
+```sql
+audit_logs (id, user_id, action, entity, entity_id, timestamp)
+```
+
+### Relasi ERD
+
+```
+users
+  ↓
+permits → permit_approvals
+   ↓           
+  jsea → jsea_steps
+   ↓
+permit_checklist_results
+   ↓
+checklist_items → safety_checklists
+```
+
+---
+
+## 💻 Teknologi
+
+### Backend
+- **Framework:** ASP.NET Core MVC
+- **Language:** C#
+- **Database:** MySQL via MAMP
+- **ORM:** Entity Framework Core
+- **Authentication:** ASP.NET Identity
+
+### Frontend
+- **UI Framework:** Tailwind CSS
+- **JavaScript:** Vanilla JS / jQuery
+- **Template Engine:** Razor Views
+- **Icons:** Lucide Icons
+
+### DevOps & Tools
+- **Version Control:** Git
+- **CI/CD:** (To be defined)
+- **Hosting:** (To be defined)
+
+---
+
+### Default Login
+
+- **Admin:** admin@company.com / Admin123!
+- **HSE:** hse@company.com / Hse123!
+
+*(Segera ganti password setelah login pertama)*
+
+---
+
+## 🔒 Prinsip Keamanan
+
+### Business Rules (Non-Negotiable)
+
+```
+⛔ No Permit – No Work
+⛔ No JSEA – No Permit
+⛔ No Approval – No Active Permit
+⛔ Unsafe Condition – Stop Work
+```
+
+### Kontrol Akses
+
+- ✅ Role-Based Access Control (RBAC)
+- ✅ Requester tidak boleh approve permit sendiri
+- ✅ Approval harus berurutan
+- ✅ Satu user tidak boleh multi-role pada permit yang sama
+- ✅ Executor hanya memiliki akses read-only
+
+### Audit & Compliance
+
+- ✅ Semua aktivitas tercatat dalam audit log
+- ✅ Retensi data minimal 5 tahun
+- ✅ Trail lengkap untuk setiap permit
+- ✅ Mendukung audit ISO 45001
+
+---
+
+## 📱 User Interface
+
+### Color Coding Status
+
+| Status | Color |
+|--------|-------|
+| Draft | ![#E5E7EB](https://via.placeholder.com/15/E5E7EB/000000?text=+) Gray |
+| Submitted | ![#FBBF24](https://via.placeholder.com/15/FBBF24/000000?text=+) Yellow |
+| Supervisor Approved | ![#60A5FA](https://via.placeholder.com/15/60A5FA/000000?text=+) Blue |
+| Area Owner Approved | ![#818CF8](https://via.placeholder.com/15/818CF8/000000?text=+) Indigo |
+| HSE Approved | ![#A78BFA](https://via.placeholder.com/15/A78BFA/000000?text=+) Purple |
+| Active | ![#10B981](https://via.placeholder.com/15/10B981/000000?text=+) Green |
+| Suspended | ![#EF4444](https://via.placeholder.com/15/EF4444/000000?text=+) Red |
+| Closed | ![#4B5563](https://via.placeholder.com/15/4B5563/000000?text=+) Dark Gray |
+
+### Layout
+
+```
++--------------------------------------------------+
+| Header (Logo, User, Notifications, Logout)       |
++----------------------+---------------------------+
+| Sidebar Menu         | Main Content               |
+| - Dashboard          |                           |
+| - Permit             |  [Dynamic Content Area]   |
+| - Approval           |                           |
+| - Monitoring         |                           |
+| - Report             |                           |
+| - Master Data        |                           |
++----------------------+---------------------------+
+| Footer                                           |
++--------------------------------------------------+
+```
+
+---
+
+# Plan Frontend PTW System - UI/UX & Navigasi
+
+Saya akan membuatkan rencana lengkap untuk frontend PTW System yang user-friendly dan sesuai dengan kebutuhan industri manufaktur.
+
+---
+
+## 🎨 Design System
+
+### Color Palette
+
+```
+Primary Colors:
+- Primary: #2563EB (Blue 600) - Untuk CTA utama
+- Secondary: #059669 (Emerald 600) - Untuk status Active/Success
+- Danger: #DC2626 (Red 600) - Untuk warning/reject
+- Warning: #F59E0B (Amber 500) - Untuk pending status
+
+Neutral:
+- Gray 50-900 untuk background, text, borders
+
+Status Colors (sesuai dokumen):
+- Draft: #E5E7EB (Gray 200)
+- Submitted: #FBBF24 (Amber 400)
+- In Approval: #60A5FA (Blue 400)
+- Active: #10B981 (Emerald 500)
+- Suspended: #EF4444 (Red 500)
+- Closed: #4B5563 (Gray 600)
+```
+
+### Typography
+
+```
+Font Family: Inter / System UI
+Heading 1: 2rem (32px) - Semibold
+Heading 2: 1.5rem (24px) - Semibold
+Heading 3: 1.25rem (20px) - Medium
+Body: 0.875rem (14px) - Regular
+Small: 0.75rem (12px) - Regular
+```
+
+---
+
+## 📐 Layout Structure
+
+### Main Layout Components
+
+```
+┌─────────────────────────────────────────────────────┐
+│ Top Navigation Bar (Fixed)                          │
+│ Logo | Search | Notifications | User Profile        │
+├──────────┬──────────────────────────────────────────┤
+│          │                                           │
+│ Sidebar  │  Main Content Area                        │
+│ (Fixed)  │  ┌─────────────────────────────────────┐ │
+│          │  │ Breadcrumb                          │ │
+│ Nav Menu │  ├─────────────────────────────────────┤ │
+│          │  │ Page Header + Actions               │ │
+│          │  ├─────────────────────────────────────┤ │
+│          │  │                                     │ │
+│          │  │ Dynamic Content                     │ │
+│          │  │                                     │ │
+│          │  │                                     │ │
+│          │  └─────────────────────────────────────┘ │
+├──────────┴──────────────────────────────────────────┤
+│ Footer (Status bar, version info)                   │
+└─────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🧭 Navigation Structure
+
+### Sidebar Menu (Role-Based)
+
+```
+┌─────────────────────────┐
+│ [Logo] PTW System       │
+├─────────────────────────┤
+│                         │
+│ 🏠 Dashboard            │
+│                         │
+│ 📋 Permit Saya          │
+│   ├─ List Permit        │
+│   ├─ Buat Permit Baru   │
+│   └─ Draft              │
+│                         │
+│ ✅ Approval (badge: 5)  │
+│   ├─ Menunggu Review    │
+│   └─ Riwayat Approval   │
+│                         │
+│ 👁️ Monitoring           │
+│   ├─ Permit Aktif       │
+│   ├─ QR Scanner         │
+│   └─ Stop Work Log      │
+│                         │
+│ 📊 Laporan              │
+│   ├─ Statistik          │
+│   ├─ Export Data        │
+│   └─ Audit Trail        │
+│                         │
+│ ⚙️ Master Data (Admin)  │
+│   ├─ User Management    │
+│   ├─ Permit Types       │
+│   ├─ Locations          │
+│   └─ Safety Checklist   │
+│                         │
+└─────────────────────────┘
+```
+
+### Top Navigation Bar
+
+```
+┌────────────────────────────────────────────────────┐
+│ [☰] [Logo] PTW    [🔍 Search]    [🔔3] [👤 User ▼] │
+└────────────────────────────────────────────────────┘
+
+Components:
+- Toggle Sidebar (Mobile)
+- Quick Search (Global search permits)
+- Notification Bell (dengan badge counter)
+- User Dropdown:
+  ├─ Profile
+  ├─ Settings
+  ├─ Help
+  └─ Logout
+```
+
+---
+
+## 📱 Responsive Design Strategy
+
+### Breakpoints
+
+```css
+/* Mobile First Approach */
+sm: 640px   /* Mobile landscape */
+md: 768px   /* Tablet */
+lg: 1024px  /* Desktop */
+xl: 1280px  /* Large desktop */
+```
+
+### Layout Behavior
+
+**Desktop (≥1024px)**
+- Sidebar visible & fixed
+- 3-column grid untuk cards
+- Full data table view
+
+**Tablet (768px - 1023px)**
+- Collapsible sidebar
+- 2-column grid
+- Condensed table view
+
+**Mobile (<768px)**
+- Hidden sidebar (hamburger menu)
+- Single column
+- Card-based view (bukan table)
+- Bottom navigation untuk quick actions
+
+---
+
+## 🖥️ Key Pages & Wireframes
+
+### 1. Dashboard
+
+```
 ┌─────────────────────────────────────────────────┐
-│           MONITORING & EXECUTION                │
-│  ┌─────────┐  ┌─────────┐  ┌─────────┐       │
-│  │Supervisor│  │  HSE    │  │ QR Scan │       │
-│  │ Checks  │  │ Patrol  │  │ Verify  │       │
-│  └────┬────┘  └────┬────┘  └────┬────┘       │
-│       │            │            │              │
-│       ▼            ▼            ▼              │
-│  ┌─────────┐  ┌─────────┐  ┌─────────┐       │
-│  │  Safe?  │  │  Safe?  │  │ Valid?  │       │
-│  └────┬────┘  └────┬────┘  └────┬────┘       │
-│       │            │            │              │
-│   ┌───┴───┐    ┌───┴───┐    ┌───┴───┐        │
-│   │YES│NO │    │YES│NO │    │YES│NO │        │
-│   │↓ │ ↓ │    │↓ │ ↓ │    │↓ │ ↓ │        │
-│   │Cont│Stop│   │Cont│Stop│   │OK  │Alert│        │
-│   └─────────┘  └─────────┘  └─────────┘       │
+│ Dashboard                            [Date ▼]   │
+├─────────────────────────────────────────────────┤
+│                                                 │
+│ ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌────────┐│
+│ │📝 Draft │ │⏳Pending│ │✅Active │ │📊Total ││
+│ │   12    │ │   8     │ │   5    │ │  156   ││
+│ └─────────┘ └─────────┘ └─────────┘ └────────┘│
+│                                                 │
+│ ┌──────────────────────────────────────────────┐│
+│ │ 📊 Permit Trend (Chart)                      ││
+│ │ [Line/Bar Chart - 6 bulan terakhir]          ││
+│ └──────────────────────────────────────────────┘│
+│                                                 │
+│ ┌─────────────────┐  ┌──────────────────────┐  │
+│ │ 🔥 Hot Work: 3  │  │ ⚡ Electrical: 2     │  │
+│ │ 📏 Height: 2    │  │ 🚧 Confined: 1       │  │
+│ └─────────────────┘  └──────────────────────┘  │
+│                                                 │
+│ Recent Permits                    [View All >]  │
+│ ┌──────────────────────────────────────────────┐│
+│ │ PTW-2024-001 | Hot Work | Active | Area A   ││
+│ │ PTW-2024-002 | Height   | Pending| Area B   ││
+│ └──────────────────────────────────────────────┘│
 └─────────────────────────────────────────────────┘
-     │
-     ▼
-┌──────────┐     ┌──────────┐     ┌──────────┐
-│ Work Done│────▶│  Close   │────▶│  CLOSED  │
-│          │     │  Permit  │     │          │
-└──────────┘     └──────────┘     └──────────┘
+```
+
+### 2. List Permit
+
+```
+┌─────────────────────────────────────────────────┐
+│ Permit Saya                    [+ Buat Baru]    │
+├─────────────────────────────────────────────────┤
+│                                                 │
+│ Filter: [All ▼] [Type ▼] [Status ▼] [🔍Search] │
+│                                                 │
+│ ┌─────────────────────────────────────────────┐ │
+│ │ No.Permit    │ Type    │ Status  │ Actions │ │
+│ ├─────────────────────────────────────────────┤ │
+│ │ PTW-2024-001 │Hot Work │🟢Active │[👁️][📝]│ │
+│ │ PTW-2024-002 │Height   │🟡Pending│[👁️][📝]│ │
+│ │ PTW-2024-003 │Electric │⚪Draft  │[📝][🗑️]│ │
+│ └─────────────────────────────────────────────┘ │
+│                                                 │
+│ Showing 1-10 of 156     [< 1 2 3 4 5 >]        │
+└─────────────────────────────────────────────────┘
+```
+
+### 3. Buat/Edit Permit (Multi-Step Form)
+
+```
+┌─────────────────────────────────────────────────┐
+│ Buat Permit Baru                    [Save Draft]│
+├─────────────────────────────────────────────────┤
+│                                                 │
+│ Progress: ●━━━○━━━○━━━○                         │
+│           1   2   3   4                         │
+│         Info JSEA Check Submit                  │
+│                                                 │
+│ ┌─────────────────────────────────────────────┐ │
+│ │ STEP 1: Informasi Dasar                     │ │
+│ │                                             │ │
+│ │ Jenis Pekerjaan: [Hot Work ▼]              │ │
+│ │ Judul Pekerjaan: [_____________________]   │ │
+│ │ Deskripsi:                                  │ │
+│ │ [________________________________]          │ │
+│ │                                             │ │
+│ │ Lokasi: [Area A - Produksi Line 1 ▼]       │ │
+│ │ Tanggal Mulai: [📅 05/02/2026]             │ │
+│ │ Waktu: [08:00] - [17:00]                   │ │
+│ │                                             │ │
+│ │ Executor: [+ Add Executor]                 │ │
+│ │ - John Doe (Welder)              [🗑️]      │ │
+│ │ - Jane Smith (Supervisor)        [🗑️]      │ │
+│ └─────────────────────────────────────────────┘ │
+│                                                 │
+│                            [Cancel] [Next >]    │
+└─────────────────────────────────────────────────┘
+```
+
+### 4. JSEA Form
+
+```
+┌─────────────────────────────────────────────────┐
+│ STEP 2: Job Safety & Environmental Analysis    │
+├─────────────────────────────────────────────────┤
+│                                                 │
+│ ┌─────────────────────────────────────────────┐ │
+│ │ Step Analysis              [+ Add Step]     │ │
+│ ├─────────────────────────────────────────────┤ │
+│ │ Step 1: Persiapan Area Kerja    [Edit][🗑️] │ │
+│ │                                             │ │
+│ │ Langkah Kerja:                              │ │
+│ │ Membersihkan area dan setup peralatan       │ │
+│ │                                             │ │
+│ │ Bahaya:                                     │ │
+│ │ - Tersandung material                       │ │
+│ │ - Peralatan jatuh                           │ │
+│ │                                             │ │
+│ │ Risk Level: [🔴 HIGH ▼]                     │ │
+│ │                                             │ │
+│ │ Pengendalian:                               │ │
+│ │ - Gunakan APD lengkap                       │ │
+│ │ - Barricade area kerja                      │ │
+│ │ - Pre-job safety briefing                   │ │
+│ ├─────────────────────────────────────────────┤ │
+│ │ Step 2: [Collapsed]              [Expand]   │ │
+│ └─────────────────────────────────────────────┘ │
+│                                                 │
+│                        [< Back] [Next >]        │
+└─────────────────────────────────────────────────┘
+```
+
+### 5. Safety Checklist
+
+```
+┌─────────────────────────────────────────────────┐
+│ STEP 3: Safety Checklist - Hot Work            │
+├─────────────────────────────────────────────────┤
+│                                                 │
+│ ⚠️ Semua item harus dicentang untuk melanjutkan│
+│                                                 │
+│ ┌─────────────────────────────────────────────┐ │
+│ │ A. Persiapan Area                           │ │
+│ │ ☑️ Area kerja bebas dari bahan mudah terbakar│ │
+│ │ ☑️ Fire extinguisher tersedia dalam jangkauan│ │
+│ │ ☑️ Fire watch ditugaskan                     │ │
+│ │ ☐ Hot work shield terpasang                 │ │
+│ │                                             │ │
+│ │ B. Alat Pelindung Diri                      │ │
+│ │ ☑️ Welding helmet & safety glasses          │ │
+│ │ ☑️ Leather gloves & apron                   │ │
+│ │ ☐ Safety shoes                              │ │
+│ │                                             │ │
+│ │ C. Peralatan                                │ │
+│ │ ☑️ Welding machine dalam kondisi baik       │ │
+│ │ ☐ Gas cylinder secured properly             │ │
+│ │                                             │ │
+│ │ Catatan Tambahan:                           │ │
+│ │ [______________________________]            │ │
+│ └─────────────────────────────────────────────┘ │
+│                                                 │
+│ Completion: 8/11 items (73%)                    │
+│                        [< Back] [Next >]        │
+└─────────────────────────────────────────────────┘
+```
+
+### 6. Review & Submit
+
+```
+┌─────────────────────────────────────────────────┐
+│ STEP 4: Review & Submit                         │
+├─────────────────────────────────────────────────┤
+│                                                 │
+│ ┌─────────────────────────────────────────────┐ │
+│ │ Ringkasan Permit                            │ │
+│ │                                             │ │
+│ │ No. Permit: PTW-2024-XXX (Auto-generated)   │ │
+│ │ Jenis: Hot Work - Welding                   │ │
+│ │ Lokasi: Area A - Produksi Line 1            │ │
+│ │ Periode: 05 Feb 2026, 08:00 - 17:00        │ │
+│ │ Requester: Anda (John Worker)               │ │
+│ │                                             │ │
+│ │ JSEA: ✅ 3 steps completed                  │ │
+│ │ Safety Checklist: ⚠️ 3 items pending        │ │
+│ │                                             │ │
+│ │ ⚠️ Perhatian:                               │ │
+│ │ Setelah submit, permit akan masuk proses    │ │
+│ │ approval dan tidak dapat diubah tanpa       │ │
+│ │ persetujuan approver.                       │ │
+│ └─────────────────────────────────────────────┘ │
+│                                                 │
+│         [< Back] [Save Draft] [Submit Permit]   │
+└─────────────────────────────────────────────────┘
+```
+
+### 7. Approval Dashboard
+
+```
+┌─────────────────────────────────────────────────┐
+│ Approval Queue               [Refresh] 🔔 5     │
+├─────────────────────────────────────────────────┤
+│                                                 │
+│ Tabs: [Pending (5)] [Reviewed (24)]            │
+│                                                 │
+│ ┌─────────────────────────────────────────────┐ │
+│ │ PTW-2024-001 - Hot Work Welding            🔥│ │
+│ │ Requester: John Worker | Area A              │ │
+│ │ Submitted: 05 Feb 2026, 08:30               │ │
+│ │ ⏱️ SLA: 2h 15m remaining                     │ │
+│ │                                             │ │
+│ │ Quick Info:                                 │ │
+│ │ • JSEA: ✅ Completed (3 steps)              │ │
+│ │ • Checklist: ✅ All items checked           │ │
+│ │ • Risk Level: 🔴 HIGH                       │ │
+│ │                                             │ │
+│ │          [View Details] [Approve] [Reject]  │ │
+│ ├─────────────────────────────────────────────┤ │
+│ │ PTW-2024-002 - Working at Height           📏│ │
+│ │ ...                                         │ │
+│ └─────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────┘
+```
+
+### 8. Permit Detail View
+
+```
+┌─────────────────────────────────────────────────┐
+│ ← Back to List        PTW-2024-001    [⋮ Menu] │
+├─────────────────────────────────────────────────┤
+│                                                 │
+│ 🔥 Hot Work - Welding Main Frame                │
+│ Status: 🟢 ACTIVE                               │
+│                                                 │
+│ ┌────────────────────────────────────┐          │
+│ │ Timeline                           │          │
+│ │ ✅ Created - 05 Feb, 08:00        │          │
+│ │ ✅ Supervisor Approved - 08:30    │          │
+│ │ ✅ Area Owner Approved - 09:00    │          │
+│ │ ✅ HSE Approved - 09:30           │          │
+│ │ ✅ Authorized - 10:00             │          │
+│ │ 🟢 Active Since - 10:15           │          │
+│ └────────────────────────────────────┘          │
+│                                                 │
+│ ┌── Tabs ──────────────────────────────────┐    │
+│ │[Info][JSEA][Checklist][Approval][Monitoring]│ │
+│ │                                           │   │
+│ │ Detail Informasi:                         │   │
+│ │ Lokasi: Area A - Produksi Line 1          │   │
+│ │ Periode: 05 Feb 08:00 - 17:00            │   │
+│ │ Requester: John Worker                    │   │
+│ │ Supervisor: Jane Smith                    │   │
+│ │                                           │   │
+│ │ Deskripsi:                                │   │
+│ │ Pengelasan frame utama untuk mesin baru   │   │
+│ │                                           │   │
+│ │ Executor Team:                            │   │
+│ │ • John Doe (Welder)                       │   │
+│ │ • Mike Brown (Fire Watch)                 │   │
+│ └───────────────────────────────────────────┘   │
+│                                                 │
+│ [📥 Download PDF] [🖨️ Print] [⚠️ Stop Work]    │
+└─────────────────────────────────────────────────┘
+```
+
+### 9. Active Monitoring
+
+```
+┌─────────────────────────────────────────────────┐
+│ Permit Aktif - Real-time Monitoring            │
+├─────────────────────────────────────────────────┤
+│                                                 │
+│ [🔴 LIVE] Auto-refresh: ON  Last: 2 sec ago    │
+│                                                 │
+│ ┌─────────────────────────────────────────────┐ │
+│ │ 🗺️ Map View / List View                     │ │
+│ ├─────────────────────────────────────────────┤ │
+│ │ Area A (3 Active)                           │ │
+│ │ ┌─────────────────────────────────────┐     │ │
+│ │ │ 🔥 PTW-001 | Hot Work | 6h 30m left │     │ │
+│ │ │ 📍 Line 1 | ⏰ Started: 10:15       │     │ │
+│ │ │ Status: 🟢 Normal                   │     │ │
+│ │ │        [View] [QR Code] [Suspend]   │     │ │
+│ │ └─────────────────────────────────────┘     │ │
+│ │ ┌─────────────────────────────────────┐     │ │
+│ │ │ ⚡ PTW-002 | Electrical              │     │ │
+│ │ │ Status: ⏸️ SUSPENDED (15m ago)      │     │ │
+│ │ │ Reason: Unsafe condition detected   │     │ │
+│ │ │        [View] [Resume] [Details]    │     │ │
+│ │ └─────────────────────────────────────┘     │ │
+│ └─────────────────────────────────────────────┘ │
+│                                                 │
+│ Quick Actions:                                  │
+│ [📱 Scan QR] [🛑 Emergency Stop All] [📊 Export]│
+└─────────────────────────────────────────────────┘
+```
+
+### 10. QR Code Display
+
+```
+┌─────────────────────────────────────────────────┐
+│              PTW-2024-001                       │
+│              Hot Work Permit                    │
+├─────────────────────────────────────────────────┤
+│                                                 │
+│              ┌─────────────┐                    │
+│              │             │                    │
+│              │  QR CODE    │                    │
+│              │   IMAGE     │                    │
+│              │             │                    │
+│              └─────────────┘                    │
+│                                                 │
+│         Scan untuk verifikasi permit            │
+│                                                 │
+│ Location: Area A - Line 1                       │
+│ Valid: 05 Feb 2026, 08:00 - 17:00              │
+│ Status: 🟢 ACTIVE                               │
+│                                                 │
+│                                                 │
+│         [📥 Download] [🖨️ Print A4]            │
+│         [📧 Email QR]                           │
+└─────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 3. SCREEN WIREFRAMES & LAYOUT
+## 🎯 UX Principles
 
-### 3.1 Universal Layout Structure
+### 1. **Progressive Disclosure**
+- Multi-step form untuk reduce cognitive load
+- Collapsible sections untuk info detail
+- Tabs untuk organize complex data
 
+### 2. **Clear Feedback**
 ```
-┌─────────────────────────────────────────────────────────────┐
-│ HEADER (Fixed, 64px height)                                 │
-├─────────────────────────────────────────────────────────────┤
-│ [Logo PTW]     [Breadcrumb: Home > Permits > New]      [🔔] [👤 User ▼] │
-└─────────────────────────────────────────────────────────────┘
-
-┌──────────────────┬────────────────────────────────────────┐
-│ SIDEBAR          │ MAIN CONTENT AREA                        │
-│ (Fixed, 240px)   │ (Scrollable, max-width 1200px)         │
-│                  │                                        │
-│  Dashboard       │                                        │
-│  ─────────────   │                                        │
-│  Permits         │     [Content varies by page]           │
-│    ├ New Permit  │                                        │
-│    ├ My Permits  │                                        │
-│    └ Drafts      │                                        │
-│  ─────────────   │                                        │
-│  Approvals       │                                        │
-│    ├ Pending (3) │     ←─── Main Card Container ───→      │
-│    └ History     │     ┌────────────────────────┐       │
-│  ─────────────   │     │ Card / Table / Form      │       │
-│  Monitoring      │     │                        │       │
-│  ─────────────   │     │                        │       │
-│  Reports         │     └────────────────────────┘       │
-│                  │                                        │
-│                  │                                        │
-│  ─────────────   │                                        │
-│  [🌙 Dark Mode]  │                                        │
-│  [⚙️ Settings]   │                                        │
-│                  │                                        │
-└──────────────────┴────────────────────────────────────────┘
+✅ Success: Toast notification (green, top-right, 3s)
+❌ Error: Alert banner (red, top, persistent)
+⏳ Loading: Skeleton loader / spinner
+💾 Auto-save: "Draft saved at 10:30" (subtle)
 ```
 
-### 3.2 Dashboard Layout (Role-Specific)
+### 3. **Accessibility**
+- Keyboard navigation support
+- ARIA labels untuk screen readers
+- Color contrast ratio ≥ 4.5:1
+- Focus indicators jelas
+- Form validation dengan error messages
 
-#### Dashboard - Requester View
-
+### 4. **Mobile Optimization**
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  DASHBOARD                          [Date: 04 Feb 2026]     │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────┐│
-│  │ NEW PERMIT      │  │ MY PERMITS      │  │ HELP        ││
-│  │ [Big Button]    │  │ [Big Button]    │  │ [Big Button]││
-│  │     ➕          │  │     📋          │  │     ❓      ││
-│  └─────────────────┘  └─────────────────┘  └─────────────┘│
-│                                                             │
-│  ┌─────────────────────────────────────────────────────────┐
-│  │ QUICK STATS                           [View All →]       │
-│  ├─────────────────────────────────────────────────────────┤
-│  │  [🟡 2] Draft        [🟠 1] Waiting    [🟢 3] Active   │
-│  └─────────────────────────────────────────────────────────┘
-│                                                             │
-│  ┌─────────────────────────────────────────────────────────┐
-│  │ RECENT ACTIVITY (Last 5)                                │
-│  ├─────────────────────────────────────────────────────────┤
-│  │ • Hot Work Permit #HW-2026-0042 → [SUPERVISOR_APPROVED] │
-│  │ • Electrical Work #EL-2026-0018 → [ACTIVE]           │
-│  │ • Maintenance #MN-2026-0105 → [HSE_APPROVED]            │
-│  └─────────────────────────────────────────────────────────┘
-└─────────────────────────────────────────────────────────────┘
+Touch Targets:
+- Minimum 44×44px
+- Spacing antar button: 8px
+
+Mobile Interactions:
+- Swipe untuk navigate tabs
+- Pull-to-refresh untuk data update
+- Bottom sheet untuk actions
+- Sticky header untuk context
 ```
 
-#### Dashboard - Approver View (Supervisor/Area Owner/HSE)
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│  DASHBOARD - SUPERVISOR                                   │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  ┌─────────────────────────────────────────────────────────┐
-│  │ ⚠️ URGENT: PERMITS REQUIRING ATTENTION                 │
-│  ├─────────────────────────────────────────────────────────┤
-│  │ ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐          │
-│  │ │Pending │ │Overdue │ │HighRisk│ │HotWork │          │
-│  │ │   5    │ │   2    │ │   3    │ │   1    │          │
-│  │ └────────┘ └────────┘ └────────┘ └────────┘          │
-│  └─────────────────────────────────────────────────────────┘
-│                                                             │
-│  ┌─────────────────────────────────────────────────────────┐
-│  │ APPROVAL QUEUE                                          │
-│  ├──────┬──────────┬────────────┬──────────┬────────────┤
-│  │SELECT│PERMIT NO.│TYPE        │REQUESTER │TIME        │
-│  ├──────┼──────────┼────────────┼──────────┼────────────┤
-│  │  ⭕  │HW-2026-42│Hot Work    │Ahmad F.  │2 hours ago │
-│  │  ⭕  │EL-2026-18│Electrical  │Budi S.   │5 hours ago │
-│  └──────┴──────────┴────────────┴──────────┴────────────┘
-│  [🔘 Select All]    [✅ Approve Selected] [❌ Reject]     │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### 3.3 Permit Creation Form (Wizard Layout)
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│  NEW PERMIT - HOT WORK                          [Step 2/4] │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  ┌─────────────────────────────────────────────────────────┐
-│  │ PROGRESS INDICATOR                                      │
-│  │  1️⃣ ─── 2️⃣ ─── 3️⃣ ─── 4️⃣                             │
-│  │ Basic   JSEA   Checklist  Review                         │
-│  │ ✓Done   ●Current ○Pending ○Pending                     │
-│  └─────────────────────────────────────────────────────────┘
-│                                                             │
-│  ┌─────────────────────────────────────────────────────────┐
-│  │ STEP 2: JOB SAFETY & ENVIRONMENTAL ANALYSIS (JSEA)      │
-│  ├─────────────────────────────────────────────────────────┤
-│  │                                                          │
-│  │  Job Description: [________________________________]    │
-│  │                                                          │
-│  │  JSEA Steps:                                             │
-│  │  ┌────┬─────────────────┬─────────────────┬────────────┐ │
-│  │  │ No │ Job Step        │ Hazards         │ Controls   │ │
-│  │  ├────┼─────────────────┼─────────────────┼────────────┤ │
-│  │  │ 1  │ Preparasi area  │ Api, Debu      │ APD, Vent  │ │
-│  │  │ 2  │ [Add Step...]   │                 │            │ │
-│  │  └────┴─────────────────┴─────────────────┴────────────┘ │
-│  │  [➕ Add Row]                                           │
-│  │                                                          │
-│  │  Risk Matrix:                                            │
-│  │  [🟢 Low] [🟡 Medium] [🟠 High] [🔴 Critical]            │
-│  │                                                          │
-│  │  [💾 Save Draft]    [← Back]    [Next Step →]           │
-│  └─────────────────────────────────────────────────────────┘
-└─────────────────────────────────────────────────────────────┘
-```
-
-### 3.4 Active Permit Monitoring (Real-time Dashboard)
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│  MONITORING - ACTIVE PERMITS              [Auto-refresh: ON]│
-├─────────────────────────────────────────────────────────────┤
-│  FILTERS: [All Types ▼] [All Areas ▼] [Risk: All ▼] [🔍]    │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  ┌────────────┐  ┌────────────┐  ┌────────────┐           │
-│  │ 🔴 STOP ALL│  │ 📊 Stats   │  │ 📍 Map View│           │
-│  │   WORK     │  │            │  │            │           │
-│  └────────────┘  └────────────┘  └────────────┘           │
-│                                                             │
-│  LIVE PERMIT CARDS:                                         │
-│  ┌─────────────────────────────────────────────────────────┐
-│  │ 🟢 ACTIVE    HW-2026-0042    ⏱️ 2h 15m remaining       │
-│  ├─────────────────────────────────────────────────────────┤
-│  │  Type: Hot Work        Location: Fabrication Shop #2     │
-│  │  Requester: Ahmad F.   Supervisor: Budi S.             │
-│  │                                                          │
-│  │  Progress: [████████░░░] 85%                           │
-│  │                                                          │
-│  │  [👁️ View] [🛑 Stop Work] [✅ Close] [📱 QR Code]        │
-│  └─────────────────────────────────────────────────────────┘
-│                                                             │
-│  ┌─────────────────────────────────────────────────────────┐
-│  │ 🟢 ACTIVE    EL-2026-0018    ⏱️ 4h 30m remaining       │
-│  ├─────────────────────────────────────────────────────────┤
-│  │  Type: Electrical Work   Location: Panel Room A          │
-│  │  ⚠️  LOTO Applied: Breaker #E-42, #E-43                 │
-│  │                                                          │
-│  │  [👁️ View] [🛑 Stop Work] [✅ Close] [📱 QR Code]        │
-│  └─────────────────────────────────────────────────────────┘
-└─────────────────────────────────────────────────────────────┘
-```
-
-### 3.5 Mobile View (QR Verification - Field Use)
-
-```
-┌──────────────┐
-│  PTW Mobile  │
-├──────────────┤
-│                                                              │
-│  ┌──────────┐                                               │
-│  │   📷     │  ← Camera/QR Scanner                          │
-│  │  SCAN QR │                                               │
-│  └──────────┘                                               │
-│                                                              │
-│  OR                                                          │
-│                                                              │
-│  Enter Permit No:                                            │
-│  ┌────────────────┐                                         │
-│  │ HW-2026-0042   │                                         │
-│  └────────────────┘                                         │
-│  [🔍 Verify]                                                 │
-│                                                              │
-│  ┌─────────────────────────────────────────┐                  │
-│  │ PERMIT STATUS                          │                  │
-│  │                                        │                  │
-│  │  🟢 VALID & ACTIVE                     │                  │
-│  │                                        │                  │
-│  │  Hot Work Permit                       │                  │
-│  │  Location: Fab Shop #2                 │                  │
-│  │  Valid until: 14:00 WIB                │                  │
-│  │                                        │                  │
-│  │  [View Details]                        │                  │
-│  │  [🚨 Report Issue]                   │                  │
-│  └─────────────────────────────────────────┘                  │
-│                                                              │
-│  [🔄 Scan Again]  [📋 History]                               │
-└──────────────┘
-```
+### 5. **Performance**
+- Lazy loading untuk tables
+- Pagination (max 20 items/page)
+- Infinite scroll untuk mobile
+- Image optimization
+- Minimal JavaScript bundle
 
 ---
 
-## 4. DESIGN SYSTEM & COMPONENT LIBRARY
+## 🔔 Notification System
 
-### 4.1 Color Palette (Safety-First Design)
-
-```
-PRIMARY COLORS
-├── Blue-600    (#2563EB) - Primary Actions, Links
-├── Blue-700    (#1D4ED8) - Hover States
-└── Blue-800    (#1E40AF) - Active States
-
-SEMANTIC COLORS (Status)
-├── Success-500 (#10B981) - Active, Approved, Safe
-├── Warning-500 (#F59E0B) - Pending, Draft, Medium Risk
-├── Danger-500  (#EF4444) - Rejected, Stop Work, High Risk
-├── Info-500    (#3B82F6) - Info, In Progress
-└── Gray-500    (#6B7280) - Closed, Inactive, Neutral
-
-BACKGROUND
-├── White       (#FFFFFF) - Cards, Content Areas
-├── Gray-50     (#F9FAFB) - Page Background
-├── Gray-100    (#F3F4F6) - Sidebar, Dividers
-└── Dark-900    (#111827) - Dark Mode Background
-
-RISK LEVEL BADGES
-├── 🟢 Green-100 text-Green-800   - Low Risk
-├── 🟡 Yellow-100 text-Yellow-800 - Medium Risk
-├── 🟠 Orange-100 text-Orange-800 - High Risk
-└── 🔴 Red-100 text-Red-800       - Critical Risk
-```
-
-### 4.2 Typography Scale
+### Types
 
 ```
-FONT FAMILY: Inter (Sans-serif) for UI, Roboto Mono for permit numbers
-
-SCALE:
-├── H1: 32px/40px bold    - Page Titles
-├── H2: 24px/32px semibold - Section Headers
-├── H3: 18px/24px medium   - Card Titles
-├── Body: 14px/20px regular - Content
-├── Small: 12px/16px regular - Captions, timestamps
-└── Mono: 14px/20px medium - Permit Numbers (e.g., HW-2026-0042)
+┌─────────────────────────────────────┐
+│ 🔔 Notifications (3)                │
+├─────────────────────────────────────┤
+│ 🟢 PTW-001 Approved                 │
+│    Your permit has been approved    │
+│    2 minutes ago                    │
+├─────────────────────────────────────┤
+│ 🔴 PTW-002 Rejected                 │
+│    Reason: Incomplete JSEA          │
+│    15 minutes ago                   │
+├─────────────────────────────────────┤
+│ ⏰ PTW-003 Expiring Soon            │
+│    Expires in 1 hour                │
+│    1 hour ago                       │
+├─────────────────────────────────────┤
+│           [Mark All Read]           │
+└─────────────────────────────────────┘
 ```
 
-### 4.3 Component Specifications
+### Channels
+- 🔔 In-app notification bell
+- 📧 Email notification
+- 📱 SMS (untuk critical alerts)
+- 🖥️ Browser push notification
 
-#### Status Badge Component
+---
 
+## 🎨 Component Library
+
+### Reusable Components
+
+1. **Status Badge**
 ```html
-<!-- Active Status -->
-<span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-  <span class="w-2 h-2 mr-2 rounded-full bg-green-500 animate-pulse"></span>
-  ACTIVE
-</span>
-
-<!-- Pending Status -->
-<span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
-  <svg class="w-4 h-4 mr-1 animate-spin" fill="none" viewBox="0 0 24 24">
-    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-  </svg>
-  PENDING APPROVAL
-</span>
+<span class="badge badge-active">Active</span>
+<span class="badge badge-pending">Pending</span>
+<span class="badge badge-draft">Draft</span>
 ```
 
-#### Permit Card Component
-
+2. **Action Buttons**
 ```html
-<div class="bg-white rounded-lg shadow-md border-l-4 border-green-500 p-4 mb-4">
-  <!-- Header -->
-  <div class="flex justify-between items-start mb-3">
-    <div>
-      <span class="text-xs font-mono text-gray-500">HW-2026-0042</span>
-      <h3 class="text-lg font-semibold text-gray-900">Hot Work - Tank Repair</h3>
-    </div>
-    [STATUS BADGE]
-  </div>
-  
-  <!-- Body -->
-  <div class="grid grid-cols-2 gap-2 text-sm mb-4">
-    <div>
-      <span class="text-gray-500">Location:</span>
-      <span class="text-gray-900">Tank Farm Area B</span>
-    </div>
-    <div>
-      <span class="text-gray-500">Requester:</span>
-      <span class="text-gray-900">Ahmad Fauzi</span>
-    </div>
-  </div>
-  
-  <!-- Actions -->
-  <div class="flex gap-2">
-    <button class="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-      View Details
-    </button>
-    <button class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50">
-      QR
-    </button>
-  </div>
+<!-- Primary -->
+<button class="btn btn-primary">Submit</button>
+
+<!-- Secondary -->
+<button class="btn btn-secondary">Cancel</button>
+
+<!-- Danger -->
+<button class="btn btn-danger">Reject</button>
+
+<!-- Icon Button -->
+<button class="btn btn-icon">
+  <svg>...</svg>
+</button>
+```
+
+3. **Cards**
+```html
+<div class="card">
+  <div class="card-header">Title</div>
+  <div class="card-body">Content</div>
+  <div class="card-footer">Actions</div>
 </div>
 ```
 
-#### Action Button Hierarchy
-
-| Button Type | Style | Usage |
-|-------------|-------|-------|
-| **Primary** | Blue bg, white text | Main action (Submit, Approve, Save) |
-| **Secondary** | White bg, blue border, blue text | Alternative action (Back, Cancel) |
-| **Danger** | Red bg, white text | Destructive (Reject, Stop Work, Delete) |
-| **Success** | Green bg, white text | Completion (Close Permit, Mark Safe) |
-| **Ghost** | Transparent, gray text | Tertiary actions (View, Edit) |
-| **Icon** | Icon + label, compact | Quick actions (Print, Download, QR) |
-
----
-
-## 5. INTERACTION PATTERNS & BEHAVIORS
-
-### 5.1 Form Interactions
-
-```
-VALIDATION PATTERNS:
-├── Real-time: Validate format (email, date) on blur
-├── On Submit: Validate required fields, show inline errors
-├── JSEA: Cannot submit if risk matrix not filled
-└── Checklist: Cannot proceed if critical items unchecked
-
-CONFIRMATION DIALOGS:
-├── Submit Permit: "Are you sure? This will start approval process."
-├── Stop Work: "⚠️ STOP WORK - This will immediately halt all activities!"
-├── Approve: Quick action (no dialog) for normal flow
-└── Reject: Modal with reason input required
+4. **Data Table**
+```html
+<table class="table table-striped">
+  <thead>...</thead>
+  <tbody>...</tbody>
+</table>
 ```
 
-### 5.2 Notification System
-
-```
-TOAST NOTIFICATIONS (Auto-dismiss 5s):
-├── Success: "Permit HW-2026-0042 submitted successfully" [🟢]
-├── Error: "Failed to save JSEA. Please check required fields" [🔴]
-├── Warning: "Permit expires in 30 minutes" [🟡]
-└── Info: "New approval request received" [🔵]
-
-BADGE NOTIFICATIONS (Persistent):
-├── Sidebar: Approvals [3] ← Red badge on menu
-├── Header: Bell icon with dot [🔔]
-└── In-app: Pulse animation on active permits
-```
-
-### 5.3 Real-time Updates (SignalR/WebSocket)
-
-```
-AUTO-REFRESH STRATEGY:
-├── Dashboard: Every 60 seconds
-├── Active Monitoring: Every 30 seconds
-├── Approval Queue: Every 15 seconds
-└── Critical Alerts: Instant push notification
-
-VISUAL INDICATORS:
-├── Updated row: Brief yellow highlight flash
-├── New item: Slide in from top with "New" badge
-└── Status change: Color transition animation
-```
-
-### 5.4 Accessibility Features
-
-```
-KEYBOARD NAVIGATION:
-├── Tab order: Logical flow (Top → Bottom, Left → Right)
-├── Shortcuts: 
-│   ├── Alt+N = New Permit
-│   ├── Alt+A = Approvals
-│   ├── Alt+M = Monitoring
-│   └── Esc = Close modal/cancel
-├── Focus states: Blue ring (2px offset) on all interactive elements
-└── Skip link: "Skip to main content" for screen readers
-
-SCREEN READER SUPPORT:
-├── ARIA labels on all icons and buttons
-├── Status announcements via aria-live regions
-├── Table headers properly associated
-└── Error messages linked to inputs via aria-describedby
+5. **Form Controls**
+```html
+<div class="form-group">
+  <label>Label</label>
+  <input type="text" class="form-control">
+  <span class="form-hint">Helper text</span>
+  <span class="form-error">Error message</span>
+</div>
 ```
 
 ---
 
-## 6. MOBILE RESPONSIVE STRATEGY
+## 📊 Interaction Patterns
 
-### 6.1 Breakpoints
-
+### 1. **Approval Flow**
 ```
-BREAKPOINTS:
-├── Mobile: < 640px (sm)
-├── Tablet: 640px - 1024px (md/lg)
-├── Desktop: > 1024px (xl)
-└── Large: > 1280px (2xl)
-
-STRATEGY:
-├── Mobile-first design
-├── Sidebar becomes bottom nav on mobile
-├── Tables become cards on mobile
-├── Forms become single-column on mobile
-└── QR Scanner full-screen on mobile
-```
-
-### 6.2 Mobile Adaptations
-
-| Desktop | Mobile (< 640px) |
-|---------|------------------|
-| Fixed sidebar | Bottom navigation bar (4 icons) |
-| Multi-column forms | Single column, collapsible sections |
-| Data tables | Vertical cards with expand/collapse |
-| Hover tooltips | Long-press or (i) icons |
-| Right-click context | Swipe actions or ••• menu |
-| Modal dialogs | Full-screen sheets |
-| Side-by-side comparison | Tab switcher |
-
-### 6.3 Field Worker Mobile Interface
-
-```
-PRIORITY FEATURES FOR MOBILE:
-├── Quick QR Scan (camera-first)
-├── View Active Permit (read-only, offline capable)
-├── Stop Work Authority (one-tap with confirmation)
-├── Photo documentation (attach to permit)
-└── Voice notes (for quick reporting)
-
-OFFLINE MODE:
-├── View cached permits
-├── Queue actions for sync
-├── Draft photos locally
-└── Sync when connection restored
+User clicks "Approve"
+  ↓
+Modal confirmation appears
+  ↓
+User adds optional remarks
+  ↓
+Clicks "Confirm Approval"
+  ↓
+Loading spinner
+  ↓
+Success toast + status update
+  ↓
+Auto-redirect atau stay with refresh
 ```
 
----
-
-## 7. PAGE-LEVEL NAVIGATION MAP
-
-### 7.1 Complete Sitemap
-
+### 2. **Form Validation**
 ```
-PTW SYSTEM
-│
-├── 🔐 AUTH (Public)
-│   ├── /login
-│   ├── /forgot-password
-│   └── /reset-password
-│
-├── 📊 DASHBOARD (Authenticated)
-│   ├── /dashboard (Role-based widgets)
-│   └── /notifications
-│
-├── 📝 PERMITS MODULE
-│   ├── /permits
-│   │   ├── /new (Wizard: Type → Info → JSEA → Checklist → Review)
-│   │   ├── /drafts
-│   │   ├── /my-permits (Requester view)
-│   │   └── /all (Admin/HSE view with filters)
-│   ├── /permits/{id} (Detail view)
-│   │   ├── /view (Read-only)
-│   │   ├── /edit (Draft only)
-│   │   ├── /jsea (Edit JSEA)
-│   │   ├── /checklist (Complete checklist)
-│   │   └── /history (Audit trail)
-│   └── /permits/{id}/close (Closing form)
-│
-├── ✅ APPROVALS MODULE
-│   ├── /approvals
-│   │   ├── /pending (Queue with bulk actions)
-│   │   ├── /approved (History)
-│   │   └── /rejected (History)
-│   └── /approvals/{id}/review (Detailed review page)
-│       ├── Approve/Reject buttons
-│       ├── View JSEA & Checklist
-│       └── Add comments
-│
-├── 👁️ MONITORING MODULE
-│   ├── /monitoring
-│   │   ├── /active (Real-time dashboard)
-│   │   ├── /qr-verify (Scanner interface)
-│   │   └── /stopped (Incident management)
-│   └── /monitoring/{id}/control (Permit control panel)
-│       ├── Stop Work button
-│       ├── Resume button
-│       └── Emergency contacts
-│
-├── 📈 REPORTS MODULE
-│   ├── /reports
-│   │   ├── /analytics (Charts & trends)
-│   │   ├── /audit-log (System logs)
-│   │   └── /exports (PDF/Excel generation)
-│   └── /reports/permit-summary/{date-range}
-│
-├── ⚙️ MASTER DATA (Admin)
-│   ├── /master
-│   │   ├── /users (CRUD + roles)
-│   │   ├── /locations (Area tree)
-│   │   ├── /permit-types (Config)
-│   │   ├── /checklists (Template builder)
-│   │   └── /hazards (Risk library)
-│   └── /settings/system (Global config)
-│
-└── 👤 PROFILE
-    ├── /profile
-    ├── /change-password
-    └── /preferences (Language, notifications)
+Real-time Validation:
+- On blur (setelah user keluar dari field)
+- Show error icon + message
+- Prevent submit jika ada error
+
+Server Validation:
+- Submit form
+- Loading state
+- Show server errors di top form
+- Scroll ke first error
 ```
 
-### 7.2 URL Patterns & Parameters
-
+### 3. **Search & Filter**
 ```
-PATTERN EXAMPLES:
-├── /permits?status=active&type=hot_work&area=fabrication
-├── /approvals/pending?sort=oldest&risk=high
-├── /reports/analytics?from=2026-01-01&to=2026-02-04
-└── /monitoring/active?view=map (Alternative to list view)
+User types in search (debounce 300ms)
+  ↓
+Loading skeleton appears
+  ↓
+Results render
+  ↓
+"Showing X of Y results"
+  ↓
+[Clear filters] option available
 ```
-
----
-
-## 8. USER ONBOARDING FLOW
-
-```
-NEW USER JOURNEY:
-├── Day 1: Welcome modal + Role explanation
-├── Day 2: Interactive tour (Create first draft permit)
-├── Day 3: Contextual tips (JSEA helper, Risk matrix guide)
-├── Day 4: Advanced features (Bulk actions, Shortcuts)
-└── Ongoing: Help tooltips (?) on complex fields
-
-HELP SYSTEM:
-├── Contextual: ? icon beside every form field
-├── Video: Short Loom videos for complex workflows
-├── Chat: In-app support widget (bottom right)
-└── Docs: Link to full user manual
-```
-
----
-
-## 9. ERROR HANDLING & EMPTY STATES
-
-### 9.1 Empty States
-
-```
-SCENARIO                          VISUAL TREATMENT
-─────────────────────────────────────────────────────────────
-No permits created yet        📋 + "Create your first permit" CTA
-No approvals pending          ✅ + "All caught up!" + relax icon
-No active permits             😴 + "No work in progress"
-No search results             🔍 + "Try different keywords"
-No access permission          🚫 + "Contact admin for access"
-Offline mode                  📡 + "Working offline, will sync..."
-```
-
-### 9.2 Error Pages
-
-```
-404 Not Found:
-├── Message: "Permit not found or you don't have access"
-├── Action: [Back to Dashboard] [Search Permits]
-└── Visual: Broken chain link icon
-
-500 Server Error:
-├── Message: "Something went wrong. Our team has been notified."
-├── Action: [Retry] [Contact Support]
-└── Visual: Warning triangle with gears
-
-Session Timeout:
-├── Auto-redirect to login with message
-└── Preserve form data in localStorage for recovery
-```
-
----
-
-## 10. IMPLEMENTATION PRIORITIES
-
-### Phase 1: MVP (Core Flow)
-```
-Priority A (Must Have):
-├── Login & Role-based access
-├── Create Permit (Basic info + JSEA)
-├── Simple Approval flow (4 steps)
-├── Active/Closed status
-└── Basic Dashboard
-
-Priority B (Should Have):
-├── QR Code generation
-├── Safety Checklists
-├── Email notifications
-└── Permit detail view
-```
-
-### Phase 2: Enhanced UX
-```
-├── Bulk approvals
-├── Advanced filtering
-├── Real-time monitoring dashboard
-├── Mobile-responsive field interface
-└── Photo attachments
-```
-
-### Phase 3: Advanced Features
-```
-├── Offline mobile mode
-├── Advanced analytics
-├── Integration APIs
-├── Multi-language support
-└── AI risk suggestions
-```
-
----
-
-## SUMMARY: KEY DESIGN PRINCIPLES
-
-1. **Safety First** - Dangerous actions (Stop Work) require maximum friction, important actions (Approve) require minimum friction
-2. **Clarity Over Beauty** - Information hierarchy prioritizes safety-critical data
-3. **Contextual Navigation** - Show only what the user needs based on role and current task
-4. **Progressive Disclosure** - Complex forms (JSEA) use wizard pattern to reduce cognitive load
-5. **Mobile-First for Field** - Field workers need quick, thumb-friendly interfaces
-6. **Feedback Loops** - Every action has clear visual/audio confirmation
-7. **Error Prevention** - Validation happens early, destructive actions require confirmation
 
 ---
